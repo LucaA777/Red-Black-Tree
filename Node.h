@@ -3,10 +3,11 @@
 
 class Node {
 public:
-	Node(int num) {
+	Node(int num, bool isBlack) {
 		number = num;
 		left = nullptr;
 		right = nullptr;
+		black = isBlack;
 	}
 
 	~Node() {
@@ -34,10 +35,19 @@ public:
 		return number;
 	}
 
+	void setBlack(bool isBlack) {
+		black = isBlack;
+	}
+
+	bool isBlack() {
+		return black;
+	}
+
 private:
 	int number;
 	Node* left;
 	Node* right;
+	bool black;
 };
 
 #endif
