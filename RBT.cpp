@@ -1,5 +1,5 @@
 /*
-This is an implementation of a binary tree, with searching and deletion.
+This is an implementation of a red-black tree, with searching.
 Users can also use files to add many numbers at once.
 
 Author: Luca Ardanaz
@@ -23,6 +23,8 @@ void deleteTree(Node* &tree);
 Node* searchTree(Node* node, int num);
 void removeFromTree(Node* &node, Node* &parent, int num);
 void processFile(Node* &node);
+void balanceTree(Node* &node);
+void leftRotation(Node* &node);
 
 int main() {
 
@@ -71,6 +73,8 @@ int main() {
 			continue;
 		}
 
+		//No deletion yet!
+		/*
 		if (input == "delete") {
 			//get input and make sure it is valid
 			cout << "Enter a number to remove: " << endl;
@@ -90,6 +94,7 @@ int main() {
 
 			continue;
 		}
+		*/
 
 		if (input == "quit") {
 			continue;
@@ -115,11 +120,15 @@ string toLower(string str) {
 
 void addNum(Node* &node, int num) {
 
-	//if the node is null, set as the new root
+	//if the node is null, set as the new root and make it black
 	if (node == nullptr) {
-		node = new Node(num);
+		node = new Node(num, true);
+
+		//no rebalancing needed if its is an empty tree
 		return;
 	}
+
+	//if it is not the root we add it as red
 
 	//if lower than the node, go left, if higher, go right
 	
@@ -131,7 +140,10 @@ void addNum(Node* &node, int num) {
 		}
 		//otherwise add this as the new left node
 		else {
-			node -> setLeft(new Node(num));
+			Node* newNode = new Node(num, false);
+			newNode -> setParent(node);
+			node -> setLeft(newNode);
+			balanceTree(newNode);
 		}
 	}
 
@@ -143,9 +155,13 @@ void addNum(Node* &node, int num) {
 		}
 		//otherwise add this as the new right node
 		else {
-			node -> setRight(new Node(num));
+			Node* newNode = new Node(num, false);
+			newNode -> setParent(node);
+			node -> setRight(newNode);
+			balanceTree(newNode);
 		}
-	}	
+	}		
+	
 }
 
 void printTree(Node* tree) {
@@ -171,8 +187,8 @@ void print(Node* node, int depth) {
 		cout << "\t";
 	}
 
-	//prints value
-	cout << node -> getNum() << endl;
+	//prints value with color
+	cout << (node -> isBlack() ? "B" : "R") << "[" << node -> getNum() << "]" << endl;
 
 	//prints everything to the left
 	if (node -> getLeft() != nullptr) {
@@ -461,4 +477,60 @@ void processFile(Node* &node) {
 		return;
 	}
 
+}
+
+void balanceTree(Node* &node) {
+
+	//if the node is the root, then make sure it is black and return
+	if (node -> getParent() == nullptr) {
+		node -> setBlack(true);
+		cout << "No parent, must be the root, no changes." << endl;
+		return;
+	}
+	
+	//if the parent is black, then everything is fine
+	if (node -> getParent() -> isBlack()) {
+		cout << "The parent is black, no changes." << endl;
+		return;
+	}
+
+	//if there is no grandparent, there also won't be any rebalancing
+	if (node -> getParent() -> getParent() == nullptr) {
+		cout << "There is no grandparent, no changes." << endl;
+		return;
+	}
+
+	//find the uncle
+	Node* grandparent = node -> getParent() -> getParent();	
+	leftRotation(grandparent);
+}
+
+void leftRotation(Node* &node) {
+	
+	//store the parent for practicality
+	Node* parent = node -> getParent();
+
+	//move node's left subtree to become parent's right subtree
+	parent -> setRight(node -> getLeft());
+	
+	//update node's parent to be parent's parent
+	node -> setParent(parent -> getParent());
+
+	//link new parent to node
+	
+	//make sure that the correct side child is being relinked
+	if (node -> getParent() -> getLeft() == parent) {
+		//parent is grandparent's left child
+		node -> getParent() -> setLeft(node);
+	}
+	else {
+		//parent is grandparent's right child
+		node -> getParent() -> setRight(node);
+	}
+
+	//make parent new left child
+	parent -> setRight(node -> getLeft());
+
+	//make parent's parent be node
+	parent -> setParent(node);
 }
