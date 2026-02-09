@@ -15,7 +15,7 @@ Author: Luca Ardanaz
 using namespace std;
 
 string toLower(string str);
-void addNum(Node* &node, int num);
+void addNum(Node* &node, int num, Node* &root);
 void printTree(Node* tree);
 void print(Node* node, int depth);
 void parseNumbers(Node* &tree, string input);
@@ -23,8 +23,9 @@ void deleteTree(Node* &tree);
 Node* searchTree(Node* node, int num);
 void removeFromTree(Node* &node, Node* &parent, int num);
 void processFile(Node* &node);
-void balanceTree(Node* &node);
-void leftRotation(Node* &node);
+void balanceTree(Node* &node, Node* &root);
+void leftRotation(Node* &node, Node* &root);
+void rightRotation(Node* &node, Node* &root);
 
 int main() {
 
@@ -118,7 +119,7 @@ string toLower(string str) {
 	return str;
 }
 
-void addNum(Node* &node, int num) {
+void addNum(Node* &node, int num, Node* &root) {
 
 	//if the node is null, set as the new root and make it black
 	if (node == nullptr) {
@@ -136,14 +137,14 @@ void addNum(Node* &node, int num) {
 		
 		//check if the left child exists
 		if (node -> getLeft() != nullptr) {
-			addNum(node -> getLeft(), num);
+			addNum(node -> getLeft(), num, root);
 		}
 		//otherwise add this as the new left node
 		else {
 			Node* newNode = new Node(num, false);
 			newNode -> setParent(node);
 			node -> setLeft(newNode);
-			balanceTree(newNode);
+			balanceTree(newNode, root);
 		}
 	}
 
@@ -151,14 +152,14 @@ void addNum(Node* &node, int num) {
 		
 		//check if the right child exists
 		if (node -> getRight() != nullptr) {
-			addNum(node -> getRight(), num);
+			addNum(node -> getRight(), num, root);
 		}
 		//otherwise add this as the new right node
 		else {
 			Node* newNode = new Node(num, false);
 			newNode -> setParent(node);
 			node -> setRight(newNode);
-			balanceTree(newNode);
+			balanceTree(newNode, root);
 		}
 	}		
 	
@@ -233,7 +234,8 @@ void parseNumbers(Node* &tree, string input) {
 
 	//if the input was fully parsed, now just add the queue to the tree
 	while (!numbers.empty()) {
-		addNum(tree, numbers.front());
+		//TODO: make sure that the second tree pointer doesn't get messed up
+		addNum(tree, numbers.front(), tree);
 		numbers.pop();
 	}
 }
@@ -466,7 +468,8 @@ void processFile(Node* &node) {
 
 		//then add all of the numbers in the queue to the tree
 		while (!numbers -> empty()) {
-			addNum(node, numbers -> front());
+			//TODO: same as before
+			addNum(node, numbers -> front(), node);
 			numbers -> pop();			
 		}
 
@@ -479,7 +482,7 @@ void processFile(Node* &node) {
 
 }
 
-void balanceTree(Node* &node) {
+void balanceTree(Node* &node, Node* &root) {
 
 	//if the node is the root, then make sure it is black and return
 	if (node -> getParent() == nullptr) {
@@ -501,36 +504,140 @@ void balanceTree(Node* &node) {
 	}
 
 	//find the uncle
-	Node* grandparent = node -> getParent() -> getParent();	
-	leftRotation(grandparent);
+	Node* grandparent = node -> getParent() -> getParent();
+	Node* uncle = nullptr;	
+
+	if (grandparent -> getLeft() == node -> getParent() && grandparent -> getRight() != nullptr) {
+		//uncle must be to the right
+		uncle = grandparent -> getRight();
+	}
+	else if (grandparent -> getRight() == node -> getParent() && grandparent -> getLeft() != nullptr) {
+		uncle = grandparent -> getLeft();
+	}
+	
+	
+	//determine whether the node is right or left child
+	if (node -> getParent() -> getRight() == node) {
+		//left rotation on parent
+		cout << "Left rotation on parent." << endl;
+		leftRotation(node -> getParent(), root);
+	}
+	else {
+		//right rotation on grandparent
+		cout << "Right rotation on grandparent." << endl;
+		rightRotation(grandparent, root);
+	}
+
 }
 
-void leftRotation(Node* &node) {
+void leftRotation(Node* &node, Node* &root) {
+	
+	printTree(root);
 	
 	//store the parent for practicality
+	cout << "Storing parent..." << endl;
 	Node* parent = node -> getParent();
 
+	//if there is no parent, you can't rotate
+	if (parent == nullptr) {
+		return;
+	}
+
 	//move node's left subtree to become parent's right subtree
+	cout << "Moving node subtree..." << endl;
 	parent -> setRight(node -> getLeft());
-	
+
 	//update node's parent to be parent's parent
+	cout << "Updating node's parent..." << endl;
 	node -> setParent(parent -> getParent());
 
 	//link new parent to node
 	
+	cout << "Linking parent to node..." << endl;
+	//if there is no grandparent, the root was found
+	if (parent -> getParent() == nullptr) {
+		//make the node the root
+		cout << "Setting a new root." << endl;
+		root = node;
+	}
+
 	//make sure that the correct side child is being relinked
-	if (node -> getParent() -> getLeft() == parent) {
+	else if (parent -> getParent() -> getLeft() == parent) {
 		//parent is grandparent's left child
+		cout << "Is grandparent's left." << endl;
 		node -> getParent() -> setLeft(node);
 	}
 	else {
 		//parent is grandparent's right child
+		cout << "Is grandparent's right." << endl;
 		node -> getParent() -> setRight(node);
 	}
 
 	//make parent new left child
-	parent -> setRight(node -> getLeft());
+	cout << "Shifting parent to be new child..." << endl;
+	node -> setLeft(parent);
 
 	//make parent's parent be node
+	cout << "Set parent's new parent..." << endl;
 	parent -> setParent(node);
+
+	cout << "Rotation complete!" << endl;
+
+	printTree(root);
+}
+
+void rightRotation(Node* &node, Node* &root) {
+	
+	printTree(root);
+	
+	//store the parent for practicality
+	cout << "Storing parent..." << endl;
+	Node* parent = node -> getParent();
+
+	//if there is no parent, you can't rotate
+	if (parent == nullptr) {
+		return;
+	}
+
+	//move node's right subtree to become parent's left subtree
+	cout << "Moving node subtree..." << endl;
+	parent -> setLeft(node -> getRight());
+
+	//update node's parent to be parent's parent
+	cout << "Updating node's parent..." << endl;
+	node -> setParent(parent -> getParent());
+
+	//link new parent to node
+	
+	cout << "Linking parent to node..." << endl;
+	//if there is no grandparent, the root was found
+	if (parent -> getParent() == nullptr) {
+		//make the node the root
+		cout << "Setting a new root." << endl;
+		root = node;
+	}
+
+	//make sure that the correct side child is being relinked
+	else if (parent -> getParent() -> getLeft() == parent) {
+		//parent is grandparent's left child
+		cout << "Is grandparent's left." << endl;
+		node -> getParent() -> setLeft(node);
+	}
+	else {
+		//parent is grandparent's right child
+		cout << "Is grandparent's right." << endl;
+		node -> getParent() -> setRight(node);
+	}
+
+	//make parent new right child
+	cout << "Shifting parent to be new child..." << endl;
+	node -> setRight(parent);
+
+	//make parent's parent be node
+	cout << "Set parent's new parent..." << endl;
+	parent -> setParent(node);
+
+	cout << "Rotation complete!" << endl;
+
+	printTree(root);
 }
