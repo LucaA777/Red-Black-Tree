@@ -7,12 +7,14 @@ public:
 		number = num;
 		left = nullptr;
 		right = nullptr;
+		parent = nullptr;
 		black = isBlack;
 	}
 
 	~Node() {
 		left = nullptr;
 		right = nullptr;
+		parent = nullptr;
 	}
 
 	Node* &getLeft() {
