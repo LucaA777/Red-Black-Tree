@@ -23,6 +23,10 @@ public:
 		return right;
 	}
 
+	Node* &getParent() {
+		return parent;
+	}
+
 	void setLeft(Node* node) {
 		left = node;
 	}
@@ -30,6 +34,10 @@ public:
 	void setRight(Node* node) {
 		right = node;
 	}
+
+	void setParent(Node* node) {
+		parent = node;
+	}	
 
 	int getNum() {
 		return number;
@@ -47,6 +55,7 @@ private:
 	int number;
 	Node* left;
 	Node* right;
+	Node* parent;
 	bool black;
 };
 
