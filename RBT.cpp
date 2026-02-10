@@ -1,6 +1,6 @@
 /*
-This is an implementation of a red-black tree, with searching.
-Users can also use files to add many numbers at once.
+   This is an implementation of a red-black tree, with searching.
+   Users can also use files to add many numbers at once.
 
 Author: Luca Ardanaz
 */
@@ -31,26 +31,26 @@ int main() {
 
 	Node* tree = nullptr;
 	string input = "";
-	
+
 	do {
 		//get user input
 		cout << endl << endl;
 		cout << "Enter numbers or a command (FILE, PRINT, SEARCH, DELETE, QUIT): " << endl;
 		getline(cin, input);
 		input = toLower(input);	
-		
+
 		//check if the input matches any commands, if not see if it's numbers
-		
+
 		if (input == "file") {
 			processFile(tree);
 			continue;
 		}
-		
+
 		if (input == "print") {
 			printTree(tree);
 			continue;
 		}
-	
+
 		if (input == "search") {
 			//get input and make sure it is valid
 			cout << "Enter a number to search for: " << endl;
@@ -76,24 +76,24 @@ int main() {
 
 		//No deletion yet!
 		/*
-		if (input == "delete") {
-			//get input and make sure it is valid
-			cout << "Enter a number to remove: " << endl;
-			getline(cin, input);
+		   if (input == "delete") {
+		//get input and make sure it is valid
+		cout << "Enter a number to remove: " << endl;
+		getline(cin, input);
 
-			int num = 0;
-			try {
-				num = stoi(input);
-			}
-			catch(...) {
-				cout << "Invalid input." << endl;
-				continue;
-			}
+		int num = 0;
+		try {
+		num = stoi(input);
+		}
+		catch(...) {
+		cout << "Invalid input." << endl;
+		continue;
+		}
 
-			//delete the number from the tree
-			removeFromTree(tree, tree, num);
+		//delete the number from the tree
+		removeFromTree(tree, tree, num);
 
-			continue;
+		continue;
 		}
 		*/
 
@@ -107,7 +107,7 @@ int main() {
 	} while(input != "quit");
 
 	deleteTree(tree);
-	
+
 	return 0;
 }
 
@@ -132,9 +132,9 @@ void addNum(Node* &node, int num, Node* &root) {
 	//if it is not the root we add it as red
 
 	//if lower than the node, go left, if higher, go right
-	
+
 	if (num < node -> getNum()) {
-		
+
 		//check if the left child exists
 		if (node -> getLeft() != nullptr) {
 			addNum(node -> getLeft(), num, root);
@@ -149,7 +149,7 @@ void addNum(Node* &node, int num, Node* &root) {
 	}
 
 	else {
-		
+
 		//check if the right child exists
 		if (node -> getRight() != nullptr) {
 			addNum(node -> getRight(), num, root);
@@ -162,7 +162,7 @@ void addNum(Node* &node, int num, Node* &root) {
 			balanceTree(newNode, root);
 		}
 	}		
-	
+
 }
 
 void printTree(Node* tree) {
@@ -177,7 +177,7 @@ void print(Node* node, int depth) {
 		cout << "The tree is empty." << endl;
 		return;
 	}
-	
+
 	//prints everything to the right first
 	if (node -> getRight() != nullptr) {
 		print(node -> getRight(), depth + 1);
@@ -250,7 +250,7 @@ void deleteTree(Node* &tree) {
 	if (tree -> getLeft() != nullptr) {
 		deleteTree(tree -> getLeft());
 	}
-	
+
 	if (tree -> getRight() != nullptr) {
 		deleteTree(tree -> getRight());
 	}
@@ -263,7 +263,7 @@ Node* searchTree(Node* node, int num) {
 	if (node == nullptr) {
 		return nullptr;
 	}
-	
+
 	//if the node matches the value, return true
 	if (node -> getNum() == num) {
 		return node;
@@ -271,7 +271,7 @@ Node* searchTree(Node* node, int num) {
 
 	//if the number is less than the current node, go left, otherwise go right
 	if (num < node -> getNum()) {
-		
+
 		if (node -> getLeft() != nullptr) {
 			return searchTree(node -> getLeft(), num);
 		}
@@ -293,7 +293,7 @@ Node* searchTree(Node* node, int num) {
 }
 
 void removeFromTree(Node* &node, Node* &parent, int num) {
-	
+
 	//make sure that the node is not null
 	if (searchTree(node, num) == nullptr) {
 		cout << "Value not found in tree." << endl;
@@ -301,7 +301,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 	}
 
 	//get the chosen node and parent node
-	
+
 	if (num < node -> getNum()) {
 		if (node -> getLeft() != nullptr) {
 			removeFromTree(node -> getLeft(), node, num);
@@ -316,7 +316,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 	}
 
 	//figure out how to handle deletion
-	
+
 	//if no children, then simply delete
 	if (node -> getLeft() == nullptr && node -> getRight() == nullptr) {
 		//figure out which side of the parent to delete
@@ -335,7 +335,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 			}
 		}
 		else {
-			
+
 			//if this is the root, set that to null rather than the parent
 			if (node == parent) {
 				delete node;
@@ -352,7 +352,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 
 	//if only has a left child
 	if (node -> getLeft() != nullptr && node -> getRight() == nullptr) {
-			
+
 		Node* replacement = node -> getLeft();
 
 		if (node == parent) {
@@ -372,10 +372,10 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 
 		return;
 	}	
-	
+
 	//if only has a right child
 	if (node -> getRight() != nullptr && node -> getLeft() == nullptr) {
-	
+
 		Node* replacement = node -> getRight();
 
 		if (node == parent) {
@@ -395,7 +395,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 
 		return;
 
-		}	
+	}	
 
 	//if has two children
 	if (node -> getRight() != nullptr && node -> getLeft() != nullptr) {
@@ -428,7 +428,7 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 		if (previous != nullptr) {
 			previous -> setLeft(successor -> getRight());
 		}
-		
+
 		//make sure that we aren't linking a copy of the new node to itself
 		if (leftChild != successor) {
 			node -> setLeft(leftChild);
@@ -443,20 +443,20 @@ void removeFromTree(Node* &node, Node* &parent, int num) {
 }
 
 void processFile(Node* &node) {
-	
+
 	//first process the entire file to see if it is all valid
 	//then add it to the tree
 
 	cout << "Enter the file name: " << endl;
 	string fileName;
 	getline(cin, fileName);
-	
+
 	try {
 		fstream file(fileName);
-		
+
 		//store the numbers in a queue
 		queue<int>* numbers = new queue<int>();
-	
+
 		int num;
 		string numStr;		
 
@@ -484,9 +484,9 @@ void processFile(Node* &node) {
 
 void balanceTree(Node* &node, Node* &root) {
 
-  printTree(root);
+	printTree(root);
 
-  cout << "Begining rebalancing..." << endl;
+	cout << "Begining rebalancing..." << endl;
 
 	//if the node is the root, then make sure it is black and return
 	if (node -> getParent() == nullptr) {
@@ -494,7 +494,7 @@ void balanceTree(Node* &node, Node* &root) {
 		cout << "No parent, must be the root, no changes." << endl;
 		return;
 	}
-	
+
 	//if the parent is black, then everything is fine
 	if (node -> getParent() -> isBlack()) {
 		cout << "The parent is black, no changes." << endl;
@@ -507,7 +507,7 @@ void balanceTree(Node* &node, Node* &root) {
 		return;
 	}
 
-  cout << "Finding the uncle..." << endl;
+	cout << "Finding the uncle..." << endl;
 
 	//find the uncle
 	Node* grandparent = node -> getParent() -> getParent();
@@ -522,64 +522,71 @@ void balanceTree(Node* &node, Node* &root) {
 	}
 
 
-  //if the uncle is red, then simply recolor
-  if (uncle != nullptr && !uncle -> isBlack()) {
-    cout << "Red uncle, recoloring..." << endl;
-    node -> getParent() -> setBlack(true);
-    uncle -> setBlack(true);
-    grandparent -> setBlack(false);
+	//if the uncle is red, then simply recolor
+	if (uncle != nullptr && !uncle -> isBlack()) {
+		cout << "Red uncle, recoloring..." << endl;
+		node -> getParent() -> setBlack(true);
+		uncle -> setBlack(true);
+		grandparent -> setBlack(false);
+		root -> setBlack(true);
 
-    //check for balancing from the grandparent
-    cout << "Red uncle accounted for." << endl;
-    balanceTree(grandparent, root);
-    return;
-  }
-	
-  //otherwise, the uncle must be black
-  cout << "Black uncle, rotating..." << endl;
+		//check for balancing from the grandparent
+		cout << "Red uncle accounted for." << endl;
+		balanceTree(grandparent, root);
+		return;
+	}
+
+	//otherwise, the uncle must be black
+	cout << "Black uncle, rotating..." << endl;
 
 	//determine whether the node is right or left child
 	if (node -> getParent() -> getParent() -> getLeft() == node -> getParent()) {
-	  cout << "Parent left of grandparent." << endl;
+		cout << "Parent left of grandparent." << endl;
 
-    //rotate to form a line if currently triangular
-    if (node == node -> getParent() -> getRight()) {
-		  cout << "Left rotation on parent to form line." << endl;
-      leftRotation(node -> getParent(), root);
-      printTree(root);
-    }
+		//rotate to form a line if currently triangular
+		if (node == node -> getParent() -> getRight()) {
+			cout << "Left rotation on node to form line." << endl;
+			leftRotation(node, root);
+			printTree(root);
+			node = node -> getLeft();
+		}
 
-    cout << "Rotating grandparent..." << endl;
-    //rotate grandparent regardless
-    node -> getParent() -> setBlack(true);
-    node -> getParent() -> getParent() -> setBlack(false);
-    rightRotation(node -> getParent(), root);
+		cout << "Rotating parent..." << endl;
+		//rotate regardless
+		node -> getParent() -> setBlack(true);
+		node -> getParent() -> getParent() -> setBlack(false);
+		rightRotation(node -> getParent(), root);
 	}
 	else {
-    cout << "Parent right of grandparent." << endl;
+		cout << "Parent right of grandparent." << endl;
 
-    //rotate to form a line if currently triangular
-    if (node == node -> getParent() -> getLeft()) {
-		  cout << "Left rotation on parent to form line." << endl;
-      rightRotation(node -> getParent(), root);
-      printTree(root);
-    }
+		//rotate to form a line if currently triangular
+		if (node == node -> getParent() -> getLeft()) {
+			cout << "Right rotation on node to form line." << endl;
+			rightRotation(node, root);
+			printTree(root);
+			node = node -> getRight();
+		}
 
-    cout << "Rotating grandparent..." << endl;
-    //rotate grandparent regardless
-    node -> getParent() -> setBlack(true);
-    node -> getParent() -> getParent() -> setBlack(false);
-    leftRotation(node -> getParent(), root);
+		cout << "Rotating parent..." << endl;
+		//rotate regardless
+		node -> getParent() -> setBlack(true);
+		node -> getParent() -> getParent() -> setBlack(false);
+		leftRotation(node -> getParent(), root);
 	}
+	
+	//the root must always be black
+	root -> setBlack(true);
 
-  //the root must always be black
-  root -> setBlack(true);
+	cout << "Black uncle accounted for." << endl;
+	balanceTree(node, root);
+	return;
 
 }
 
 void leftRotation(Node* &node, Node* &root) {
 
-  cout << "Begining left rotation..." << endl;
+	cout << "Begining left rotation..." << endl;
 
 	//store the parent for practicality
 	cout << "Storing parent..." << endl;
@@ -587,7 +594,7 @@ void leftRotation(Node* &node, Node* &root) {
 
 	//if there is no parent, you can't rotate
 	if (parent == nullptr) {
-    cout << "No parent! Canceling rotation..." << endl;
+		cout << "No parent! Canceling rotation..." << endl;
 		return;
 	}
 
@@ -600,7 +607,7 @@ void leftRotation(Node* &node, Node* &root) {
 	node -> setParent(parent -> getParent());
 
 	//link new parent to node
-	
+
 	cout << "Linking parent to node..." << endl;
 	//if there is no grandparent, the root was found
 	if (parent -> getParent() == nullptr) {
@@ -633,8 +640,8 @@ void leftRotation(Node* &node, Node* &root) {
 }
 
 void rightRotation(Node* &node, Node* &root) {
-	
-  cout << "Begining right rotation..." << endl;
+
+	cout << "Begining right rotation..." << endl;
 
 	//store the parent for practicality
 	cout << "Storing parent..." << endl;
@@ -642,9 +649,9 @@ void rightRotation(Node* &node, Node* &root) {
 
 	//if there is no parent, you can't rotate
 	if (parent == nullptr) {
-    cout << "No parent! Canceling rotation..." << endl;
+		cout << "No parent! Canceling rotation..." << endl;
 		return;
-  }
+	}
 
 	//move node's right subtree to become parent's left subtree
 	cout << "Moving node subtree..." << endl;
@@ -655,7 +662,7 @@ void rightRotation(Node* &node, Node* &root) {
 	node -> setParent(parent -> getParent());
 
 	//link new parent to node
-	
+
 	cout << "Linking parent to node..." << endl;
 	//if there is no grandparent, the root was found
 	if (parent -> getParent() == nullptr) {
