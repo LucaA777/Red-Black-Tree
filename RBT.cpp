@@ -484,6 +484,10 @@ void processFile(Node* &node) {
 
 void balanceTree(Node* &node, Node* &root) {
 
+  printTree(root);
+
+  cout << "Begining rebalancing..." << endl;
+
 	//if the node is the root, then make sure it is black and return
 	if (node -> getParent() == nullptr) {
 		node -> setBlack(true);
@@ -503,6 +507,8 @@ void balanceTree(Node* &node, Node* &root) {
 		return;
 	}
 
+  cout << "Finding the uncle..." << endl;
+
 	//find the uncle
 	Node* grandparent = node -> getParent() -> getParent();
 	Node* uncle = nullptr;	
@@ -514,32 +520,74 @@ void balanceTree(Node* &node, Node* &root) {
 	else if (grandparent -> getRight() == node -> getParent() && grandparent -> getLeft() != nullptr) {
 		uncle = grandparent -> getLeft();
 	}
+
+
+  //if the uncle is red, then simply recolor
+  if (uncle != nullptr && !uncle -> isBlack()) {
+    cout << "Red uncle, recoloring..." << endl;
+    node -> getParent() -> setBlack(true);
+    uncle -> setBlack(true);
+    grandparent -> setBlack(false);
+
+    //check for balancing from the grandparent
+    cout << "Red uncle accounted for." << endl;
+    balanceTree(grandparent, root);
+    return;
+  }
 	
-	
+  //otherwise, the uncle must be black
+  cout << "Black uncle, rotating..." << endl;
+
 	//determine whether the node is right or left child
-	if (node -> getParent() -> getRight() == node) {
-		//left rotation on parent
-		cout << "Left rotation on parent." << endl;
-		leftRotation(node -> getParent(), root);
+	if (node -> getParent() -> getParent() -> getLeft() == node -> getParent()) {
+	  cout << "Parent left of grandparent." << endl;
+
+    //rotate to form a line if currently triangular
+    if (node == node -> getParent() -> getRight()) {
+		  cout << "Left rotation on parent to form line." << endl;
+      leftRotation(node -> getParent(), root);
+      printTree(root);
+    }
+
+    cout << "Rotating grandparent..." << endl;
+    //rotate grandparent regardless
+    node -> getParent() -> setBlack(true);
+    node -> getParent() -> getParent() -> setBlack(false);
+    rightRotation(node -> getParent(), root);
 	}
 	else {
-		//right rotation on grandparent
-		cout << "Right rotation on grandparent." << endl;
-		rightRotation(grandparent, root);
+    cout << "Parent right of grandparent." << endl;
+
+    //rotate to form a line if currently triangular
+    if (node == node -> getParent() -> getLeft()) {
+		  cout << "Left rotation on parent to form line." << endl;
+      rightRotation(node -> getParent(), root);
+      printTree(root);
+    }
+
+    cout << "Rotating grandparent..." << endl;
+    //rotate grandparent regardless
+    node -> getParent() -> setBlack(true);
+    node -> getParent() -> getParent() -> setBlack(false);
+    leftRotation(node -> getParent(), root);
 	}
+
+  //the root must always be black
+  root -> setBlack(true);
 
 }
 
 void leftRotation(Node* &node, Node* &root) {
-	
-	printTree(root);
-	
+
+  cout << "Begining left rotation..." << endl;
+
 	//store the parent for practicality
 	cout << "Storing parent..." << endl;
 	Node* parent = node -> getParent();
 
 	//if there is no parent, you can't rotate
 	if (parent == nullptr) {
+    cout << "No parent! Canceling rotation..." << endl;
 		return;
 	}
 
@@ -582,22 +630,21 @@ void leftRotation(Node* &node, Node* &root) {
 	parent -> setParent(node);
 
 	cout << "Rotation complete!" << endl;
-
-	printTree(root);
 }
 
 void rightRotation(Node* &node, Node* &root) {
 	
-	printTree(root);
-	
+  cout << "Begining right rotation..." << endl;
+
 	//store the parent for practicality
 	cout << "Storing parent..." << endl;
 	Node* parent = node -> getParent();
 
 	//if there is no parent, you can't rotate
 	if (parent == nullptr) {
+    cout << "No parent! Canceling rotation..." << endl;
 		return;
-	}
+  }
 
 	//move node's right subtree to become parent's left subtree
 	cout << "Moving node subtree..." << endl;
@@ -638,6 +685,4 @@ void rightRotation(Node* &node, Node* &root) {
 	parent -> setParent(node);
 
 	cout << "Rotation complete!" << endl;
-
-	printTree(root);
 }
